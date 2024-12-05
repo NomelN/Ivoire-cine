@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ivoire Ciné</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .movies {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .movie {
+            margin: 15px;
+            text-align: center;
+            width: 200px;
+        }
+        .movie img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        .movie h3 {
+            font-size: 16px;
+            margin: 10px 0 5px;
+        }
+        .pagination {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            text-decoration: none;
+            padding: 10px 15px;
+            color: white;
+            background-color: #007BFF;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+        .pagination a.disabled {
+            background-color: #cccccc;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu de navigation -->
+    <div class="navbar">
+        <div>
+            <a href="/">Accueil</a>
+            <a href="/?page=1">Films Populaires</a>
+            <a href="/about">À propos</a>
+        </div>
+        <div>
+            <a href="https://www.themoviedb.org" target="_blank">TMDb</a>
+        </div>
+    </div>
+
+    <!-- Section des films -->
+    <div class="movies">
+        {% for movie in movies %}
+        <div class="movie">
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+            {% else %}
+            <img src="https://via.placeholder.com/200x300?text=Pas+d'image" alt="Pas d'image">
+            {% endif %}
+            <h3>{{ movie.title }}</h3>
+            <p>Sortie : {{ movie.release_date }}</p>
+            <p>
+                {% for i in range(1, 6) %}
+                    {% if i <= (movie.vote_average / 2)|round(0, 'floor') %}
+                    ⭐
+                    {% else %}
+                    ☆
+                    {% endif %}
+                {% endfor %}
+                
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        {% if page > 1 %}
+        <a href="/?page={{ page - 1 }}">Précédent</a>
+        {% else %}
+        <a href="#" class="disabled">Précédent</a>
+        {% endif %}
+
+        <span>Page {{ page }} sur {{ total_pages }}</span>
+
+        {% if page < total_pages %}
+        <a href="/?page={{ page + 1 }}">Suivant</a>
+        {% else %}
+        <a href="#" class="disabled">Suivant</a>
+        {% endif %}
+    </div>
+</body>
+</html>

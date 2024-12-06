@@ -31,13 +31,6 @@ def home():
     else:
         return f"Erreur lors de la récupération des films: {response.status_code}"
     
-@app.route('/about')
-def about():
-    return """
-    <h1>À propos</h1>
-    <p>Ceci est une application de démonstration utilisant l'API TMDb.</p>
-    <a href="/">Retour à l'accueil</a>
-    """
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -110,6 +103,5 @@ def movies_by_genre(genre_id):
         )
     else:
         return f"Erreur lors de la récupération des films pour le genre {genre_id}"
-    
 if __name__== '__main__':
     app.run(debug=True)

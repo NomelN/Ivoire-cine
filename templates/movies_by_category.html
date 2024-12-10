@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        /* Menu vertical */
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            color: white;
+            height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #444;
+        }
+        .sidebar a.active {
+            background-color: #007BFF;
+        }
+        /* Contenu principal */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        .movies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .movie {
+            text-align: center;
+            width: 200px;
+        }
+        .movie img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            text-decoration: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu vertical -->
+    <div class="sidebar">
+        <h3>Catégories</h3>
+        <a href="/category/now_playing" class="{% if category == 'now_playing' %}active{% endif %}">Films en Salle</a>
+        <a href="/category/popular" class="{% if category == 'popular' %}active{% endif %}">Films Populaires</a>
+        <a href="/category/top_rated" class="{% if category == 'top_rated' %}active{% endif %}">Films les Mieux Notés</a>
+        <a href="/category/upcoming" class="{% if category == 'upcoming' %}active{% endif %}">Films à Venir</a>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="content">
+        <h1>{{ category_name }}</h1>
+        <div class="movies">
+            {% for movie in movies %}
+            <div class="movie">
+                {% if movie.poster_path %}
+                <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+                {% else %}
+                <img src="https://via.placeholder.com/200x300?text=Pas+d'image" alt="Pas d'image">
+                {% endif %}
+                <h3>{{ movie.title }}</h3>
+                <p>Sortie : {{ movie.release_date|default("Date inconnue") }}</p>
+                <p>Note : ⭐ {{ (movie.vote_average / 2)|round(1) }}/5</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="/category/{{ category }}?page={{ page - 1 }}">Précédent</a>
+            {% endif %}
+            {% if page < total_pages %}
+            <a href="/category/{{ category }}?page={{ page + 1 }}">Suivant</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

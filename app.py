@@ -103,5 +103,49 @@ def movies_by_genre(genre_id):
         )
     else:
         return f"Erreur lors de la récupération des films pour le genre {genre_id}"
+
+@app.route('/category/<string:category>')
+def movies_by_category(category):
+    """
+    Affiche les films selon la catégorie : now_playing, popular, top_rated, upcoming.
+    """
+    page = request.args.get('page', 1, type=int)
+
+    # Mapper les catégories avec les endpoints de TMDb
+    category_map = {
+        "now_playing": "Now Playing",
+        "popular": "Popular",
+        "top_rated": "Top Rated",
+        "upcoming": "Upcoming"
+    }
+
+    if category not in category_map:
+        return f"Catégorie '{category}' non reconnue.", 404
+
+    # Construire l'URL pour la catégorie
+    url = f"{BASE_URL}/movie/{category}"
+    params = {
+        "api_key": API_KEY,
+        "language": "fr-FR",
+        "page": page
+    }
+
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        movies = response.json().get("results", [])
+        total_pages = response.json().get("total_pages", 1)
+        category_name = category_map[category]
+        return render_template(
+            "movies_by_category.html",
+            movies=movies,
+            category=category,
+            category_name=category_name,
+            total_pages=total_pages,
+            page=page
+        )
+    else:
+        return f"Erreur lors de la récupération des films pour la catégorie '{category}' : {response.status_code}"
+
+
 if __name__== '__main__':
     app.run(debug=True)

@@ -96,3 +96,47 @@ def movies_by_genre(genre_id):
             "error.html",
             error=error or f"Erreur lors de la récupération des films pour le genre {genre_name}"
         )
+
+@movies_bp.route('/category/<string:category>')
+def movies_by_category(category):
+    """Films filtrés par catégorie TMDB"""
+    # Mapper les catégories avec les endpoints TMDB
+    category_map = {
+        "now_playing": "Films en Salle",
+        "popular": "Films Populaires",
+        "top_rated": "Films les Mieux Notés",
+        "upcoming": "Films à Venir"
+    }
+
+    if category not in category_map:
+        abort(404)
+
+    page = validate_page(request.args.get('page', 1))
+
+    # Utiliser le service TMDB pour les catégories
+    if category == 'popular':
+        data, error = tmdb_service.get_popular_movies(page)
+    else:
+        # Pour les autres catégories, faire un appel direct via le service
+        from app.services.tmdb_service import tmdb_service as service
+        endpoint = f"movie/{category}"
+        data, error = service._make_request(endpoint, {"page": page})
+
+    category_name = category_map[category]
+
+    if data:
+        movies = data.get("results", [])
+        total_pages = min(data.get("total_pages", 1), 500)
+        return render_template(
+            "movies_by_category.html",
+            movies=movies,
+            category=category,
+            category_name=category_name,
+            total_pages=total_pages,
+            page=page
+        )
+    else:
+        return render_template(
+            "error.html",
+            error=error or f"Erreur lors de la récupération des films pour la catégorie {category_name}"
+        )

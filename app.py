@@ -13,6 +13,7 @@ def create_flask_app():
     """Factory function pour flask run"""
     return create_app(os.getenv('FLASK_ENV', 'development'))
 
+
 if __name__ == '__main__':
     # Lancer en mode développement
     app.run(debug=True, host='127.0.0.1', port=5002)

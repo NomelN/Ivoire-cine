@@ -198,9 +198,3 @@ Ivoire-cine/
 ## 📜 Licence
 
 Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
-
-## 🙏 Remerciements
-
-- [The Movie Database (TMDB)](https://www.themoviedb.org/) pour l'API fantastique
-- [Flask](https://flask.palletsprojects.com/) pour le framework web
-- La communauté open source pour les outils et bibliothèques

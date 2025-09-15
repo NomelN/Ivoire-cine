@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category_name }} - Ivoire Ciné{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        display: flex;
+    }
+
+    main {
+        display: flex;
+        flex: 1;
+    }
+
+    .sidebar {
+        width: 200px;
+        background-color: #333;
+        color: white;
+        min-height: calc(100vh - 70px);
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .sidebar h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+        background-color: #444;
+    }
+
+    .sidebar a.active {
+        background-color: #007BFF;
+    }
+
+    .content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .content h1 {
+        margin-top: 0;
+        margin-bottom: 30px;
+        color: #333;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sidebar">
+    <h3>Catégories</h3>
+    <a href="{{ url_for('movies.movies_by_category', category='now_playing') }}"
+       class="{% if category == 'now_playing' %}active{% endif %}">Films en Salle</a>
+    <a href="{{ url_for('movies.movies_by_category', category='popular') }}"
+       class="{% if category == 'popular' %}active{% endif %}">Films Populaires</a>
+    <a href="{{ url_for('movies.movies_by_category', category='top_rated') }}"
+       class="{% if category == 'top_rated' %}active{% endif %}">Films les Mieux Notés</a>
+    <a href="{{ url_for('movies.movies_by_category', category='upcoming') }}"
+       class="{% if category == 'upcoming' %}active{% endif %}">Films à Venir</a>
+</div>
+
+<div class="content">
+    <h1>{{ category_name }}</h1>
+
+    <div class="movies">
+        {% for movie in movies %}
+            {% include 'components/movie_card.html' %}
+        {% else %}
+            <div class="empty-state">
+                <h2>Aucun film trouvé</h2>
+                <p>Aucun film n'est disponible pour la catégorie "{{ category_name }}".</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if movies and total_pages > 1 %}
+        {% set endpoint = 'movies.movies_by_category' %}
+        {% set extra_params = {'category': category} %}
+        {% include 'components/pagination.html' with context %}
+    {% endif %}
+</div>
+{% endblock %}

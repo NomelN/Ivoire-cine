@@ -2,9 +2,17 @@
 <nav class="navbar">
     <div class="nav-left">
         <a href="{{ url_for('movies.home') }}">Accueil</a>
-        <a href="{{ url_for('movies.home', page=1) }}">Films Populaires</a>
         <div class="dropdown">
             <a href="#" class="dropdown-toggle">Catégories</a>
+            <div class="dropdown-menu">
+                <a href="{{ url_for('movies.movies_by_category', category='now_playing') }}">Films en Salle</a>
+                <a href="{{ url_for('movies.movies_by_category', category='popular') }}">Films Populaires</a>
+                <a href="{{ url_for('movies.movies_by_category', category='top_rated') }}">Mieux Notés</a>
+                <a href="{{ url_for('movies.movies_by_category', category='upcoming') }}">À Venir</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Genres</a>
             <div class="dropdown-menu" id="genres-menu">
                 {% for genre in genres %}
                 <a href="{{ url_for('movies.movies_by_genre', genre_id=genre.id) }}">{{ genre.name }}</a>

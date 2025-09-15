@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Recherche avancée - Ivoire Ciné{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .search-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .search-form h2 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 0.7rem;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #007BFF;
+    }
+
+    .search-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background: #007BFF;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #545b62;
+    }
+
+    .results-summary {
+        margin-bottom: 1rem;
+        color: #666;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+    }
+
+    .no-results h3 {
+        margin-bottom: 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .search-container {
+            padding: 1rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .search-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <form class="search-form" method="get" action="{{ url_for('movies.advanced_search') }}">
+        <h2>🔍 Recherche avancée</h2>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="query">Titre du film</label>
+                <input type="text"
+                       id="query"
+                       name="query"
+                       value="{{ query or '' }}"
+                       placeholder="Ex: Avengers, Matrix...">
+            </div>
+
+            <div class="form-group">
+                <label for="genre_id">Genre</label>
+                <select id="genre_id" name="genre_id">
+                    <option value="">Tous les genres</option>
+                    {% for genre in genres %}
+                    <option value="{{ genre.id }}"
+                            {% if selected_genre_id == genre.id %}selected{% endif %}>
+                        {{ genre.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="year">Année de sortie</label>
+                <input type="number"
+                       id="year"
+                       name="year"
+                       value="{{ selected_year or '' }}"
+                       min="1900"
+                       max="2030"
+                       placeholder="Ex: 2023">
+            </div>
+
+            <div class="form-group">
+                <label for="min_rating">Note minimale</label>
+                <select id="min_rating" name="min_rating">
+                    <option value="">Toutes les notes</option>
+                    <option value="9" {% if selected_min_rating == 9 %}selected{% endif %}>9+ (Excellents)</option>
+                    <option value="8" {% if selected_min_rating == 8 %}selected{% endif %}>8+ (Très bons)</option>
+                    <option value="7" {% if selected_min_rating == 7 %}selected{% endif %}>7+ (Bons)</option>
+                    <option value="6" {% if selected_min_rating == 6 %}selected{% endif %}>6+ (Corrects)</option>
+                    <option value="5" {% if selected_min_rating == 5 %}selected{% endif %}>5+ (Moyens)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sort_by">Trier par</label>
+                <select id="sort_by" name="sort_by">
+                    <option value="popularity.desc" {% if selected_sort_by == 'popularity.desc' %}selected{% endif %}>
+                        Popularité (décroissant)
+                    </option>
+                    <option value="vote_average.desc" {% if selected_sort_by == 'vote_average.desc' %}selected{% endif %}>
+                        Note (décroissant)
+                    </option>
+                    <option value="release_date.desc" {% if selected_sort_by == 'release_date.desc' %}selected{% endif %}>
+                        Date de sortie (décroissant)
+                    </option>
+                    <option value="title.asc" {% if selected_sort_by == 'title.asc' %}selected{% endif %}>
+                        Titre (A-Z)
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="search-buttons">
+            <button type="submit" class="btn btn-primary">🔍 Rechercher</button>
+            <a href="{{ url_for('movies.advanced_search') }}" class="btn btn-secondary">🔄 Réinitialiser</a>
+        </div>
+    </form>
+
+    {% if error %}
+    <div class="error-message">
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
+    {% if movies %}
+    <div class="results-summary">
+        <p><strong>{{ movies|length }}</strong> film(s) trouvé(s)</p>
+    </div>
+
+    <div class="movies">
+        {% for movie in movies %}
+            {% include 'components/movie_card.html' %}
+        {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+        {% set endpoint = 'movies.advanced_search' %}
+        {% set extra_params = {
+            'query': query,
+            'genre_id': selected_genre_id,
+            'year': selected_year,
+            'min_rating': selected_min_rating,
+            'sort_by': selected_sort_by
+        } %}
+        {% include 'components/pagination.html' with context %}
+    {% endif %}
+
+    {% elif request.args %}
+    <div class="no-results">
+        <h3>Aucun résultat trouvé</h3>
+        <p>Essayez de modifier vos critères de recherche ou d'élargir votre recherche.</p>
+    </div>
+
+    {% else %}
+    <div class="no-results">
+        <h3>🎬 Découvrez votre prochain film préféré</h3>
+        <p>Utilisez les filtres ci-dessus pour trouver des films selon vos critères.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

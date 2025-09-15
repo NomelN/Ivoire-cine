@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initDropdowns();
     initImageLazyLoading();
     initSearchForm();
+    initThemeToggle();
 });
 
 /**
@@ -53,28 +54,32 @@ function initDropdowns() {
  * Améliore le chargement des images avec lazy loading
  */
 function initImageLazyLoading() {
-    // Si le navigateur supporte le lazy loading natif, l'utiliser
-    if ('loading' in HTMLImageElement.prototype) {
-        const images = document.querySelectorAll('img[loading="lazy"]');
-        images.forEach(img => {
-            img.src = img.src;
-        });
-    } else {
-        // Fallback pour les navigateurs plus anciens
-        const images = document.querySelectorAll('img[loading="lazy"]');
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src || img.src;
-                    img.classList.remove('lazy');
-                    observer.unobserve(img);
-                }
-            });
-        });
+    // Utiliser le lazy loading natif du navigateur
+    const images = document.querySelectorAll('img[loading="lazy"]');
 
-        images.forEach(img => imageObserver.observe(img));
-    }
+    images.forEach(img => {
+        // Ajouter une transition douce
+        img.style.transition = 'opacity 0.3s ease';
+        img.style.opacity = '0';
+
+        // Quand l'image est chargée
+        img.onload = function() {
+            this.style.opacity = '1';
+            this.classList.add('loaded');
+        };
+
+        // En cas d'erreur
+        img.onerror = function() {
+            this.style.opacity = '1';
+            this.classList.add('error');
+        };
+
+        // Si l'image est déjà en cache, l'afficher immédiatement
+        if (img.complete && img.naturalHeight !== 0) {
+            img.style.opacity = '1';
+            img.classList.add('loaded');
+        }
+    });
 }
 
 /**
@@ -196,12 +201,62 @@ if (!window.fetch) {
     console.warn('Fetch API non supportée. Certaines fonctionnalités peuvent être limitées.');
 }
 
+/**
+ * Initialise le système de basculement de thème
+ */
+function initThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (!themeToggle) return;
+
+    // Récupérer le thème sauvegardé ou utiliser la préférence système
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+    // Appliquer le thème initial
+    setTheme(initialTheme);
+
+    // Écouter les clics sur le bouton de basculement
+    themeToggle.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+    });
+
+    // Écouter les changements de préférence système
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('theme')) {
+            setTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+}
+
+/**
+ * Applique un thème donné
+ * @param {string} theme - Le thème à appliquer ('light' ou 'dark')
+ */
+function setTheme(theme) {
+    const themeToggle = document.getElementById('theme-toggle');
+
+    if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        if (themeToggle) themeToggle.textContent = '☀️';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        if (themeToggle) themeToggle.textContent = '🌙';
+        localStorage.setItem('theme', 'light');
+    }
+}
+
 // Export pour les tests (si module system disponible)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         initDropdowns,
         initImageLazyLoading,
         initSearchForm,
+        initThemeToggle,
+        setTheme,
         showMessage,
         debounce
     };

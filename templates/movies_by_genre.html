@@ -3,10 +3,10 @@
 {% block title %}{{ genre_name }} - Ivoire Ciné{% endblock %}
 
 {% block content %}
-<div style="text-align: center; margin: 2rem 0;">
+<div class="genre-header">
     <h1>Films - {{ genre_name }}</h1>
     {% if movies %}
-        <p>Page {{ page }} sur {{ total_pages }}</p>
+        <p class="page-info">Page {{ page }} sur {{ total_pages }}</p>
     {% endif %}
 </div>
 
@@ -27,4 +27,40 @@
     {% set extra_params = {'genre_id': genre_id} %}
     {% include 'components/pagination.html' with context %}
 {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .genre-header {
+        text-align: center;
+        margin: 2rem auto;
+        max-width: 1200px;
+        padding: 0 2rem;
+    }
+
+    .genre-header h1 {
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .page-info {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    [data-theme="dark"] .page-info {
+        color: #aaa;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-color);
+    }
+
+    .empty-state h2 {
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+</style>
 {% endblock %}

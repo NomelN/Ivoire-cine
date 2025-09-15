@@ -9,20 +9,59 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #f4f4f4;
+    background-color: var(--bg-color);
     line-height: 1.6;
-    color: #333;
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Variables CSS pour le thème */
+:root {
+    --bg-color: #f4f4f4;
+    --text-color: #333;
+    --card-bg: white;
+    --navbar-bg: #333;
+    --navbar-text: white;
+    --border-color: #ddd;
+    --shadow-light: rgba(0,0,0,0.1);
+    --shadow-medium: rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --card-bg: #2d2d2d;
+    --navbar-bg: #000;
+    --navbar-text: #e0e0e0;
+    --border-color: #444;
+    --shadow-light: rgba(0,0,0,0.3);
+    --shadow-medium: rgba(0,0,0,0.5);
 }
 
 /* Navigation */
 .navbar {
-    background-color: #333;
-    color: white;
+    background-color: var(--navbar-bg);
+    color: var(--navbar-text);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-right: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background-color: rgba(255,255,255,0.1);
 }
 
 .nav-left {
@@ -124,11 +163,11 @@ main {
 
 /* Carte de film */
 .movie {
-    background: white;
+    background: var(--card-bg);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px var(--shadow-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .movie:hover {
@@ -136,23 +175,75 @@ main {
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-.movie img {
+/* Lien pour les images de films */
+.movie-poster-link {
+    display: block;
+    text-decoration: none;
+}
+
+/* Images responsives et optimisées */
+.movie-poster {
+    position: relative;
     width: 100%;
     height: 300px;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.movie-poster img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    display: block;
+}
+
+.movie-poster img:not(.loaded) {
+    background: #f0f0f0;
+}
+
+.movie-poster img.error {
+    background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+}
+
+.movie:hover .movie-poster img {
+    transform: scale(1.05);
+}
+
+.movie-poster.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+    color: #999;
+    font-size: 0.9rem;
 }
 
 .movie h3 {
     font-size: 1rem;
     font-weight: 600;
     margin: 1rem;
-    color: #333;
+    color: var(--text-color);
+}
+
+.movie-title-link {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+.movie-title-link:hover {
+    color: #007BFF;
 }
 
 .release-date {
     margin: 0 1rem;
     color: #666;
     font-size: 0.9rem;
+}
+
+[data-theme="dark"] .release-date {
+    color: #aaa;
 }
 
 .rating {

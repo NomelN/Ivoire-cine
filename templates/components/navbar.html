@@ -19,6 +19,7 @@
                 {% endfor %}
             </div>
         </div>
+        <a href="{{ url_for('movies.advanced_search') }}">Recherche avancée</a>
     </div>
 
     <form action="{{ url_for('movies.search') }}" method="get" class="search-form">
@@ -31,6 +32,6 @@
     </form>
 
     <div class="nav-right">
-        <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDb</a>
+        <button id="theme-toggle" class="theme-toggle" title="Basculer le thème">🌙</button>
     </div>
 </nav>

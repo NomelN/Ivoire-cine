@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - Ivoire Ciné{% endblock %}
+
+{% block extra_css %}
+<style>
+    .movie-detail {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .movie-header {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .movie-poster-large {
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .movie-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .movie-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+    }
+
+    .movie-tagline {
+        font-style: italic;
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .movie-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .movie-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .rating-score {
+        font-weight: 600;
+        color: #007BFF;
+    }
+
+    .movie-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .genre-tag {
+        background: #007BFF;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.9rem;
+    }
+
+    .movie-overview {
+        line-height: 1.8;
+        color: #555;
+        font-size: 1.1rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 2rem 0 1rem 0;
+        color: #333;
+        border-bottom: 2px solid #007BFF;
+        padding-bottom: 0.5rem;
+    }
+
+    .cast-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .cast-member {
+        text-align: center;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .cast-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 0.5rem auto;
+        display: block;
+    }
+
+    .cast-name {
+        font-weight: 600;
+        margin: 0.5rem 0 0.2rem 0;
+    }
+
+    .cast-character {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .trailers {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .trailer-embed {
+        aspect-ratio: 16/9;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .trailer-embed iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .similar-movies {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .similar-movie {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .similar-movie:hover {
+        transform: translateY(-3px);
+    }
+
+    .similar-movie img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .similar-movie h4 {
+        padding: 0.5rem;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #007BFF;
+        color: white;
+        text-decoration: none;
+        padding: 0.7rem 1.2rem;
+        border-radius: 5px;
+        margin-bottom: 2rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+        background: #0056b3;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .movie-header {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .movie-title {
+            font-size: 2rem;
+        }
+
+        .cast-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+
+        .trailers {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="movie-detail">
+    <a href="javascript:history.back()" class="back-button">
+        ← Retour
+    </a>
+
+    <div class="movie-header">
+        <div>
+            {% if movie.poster_path %}
+            <img src="{{ TMDB_IMAGE_BASE_URL.replace('w500', 'w780') }}{{ movie.poster_path }}"
+                 alt="{{ movie.title }}"
+                 class="movie-poster-large">
+            {% else %}
+            <div class="movie-poster-large" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; height: 400px;">
+                <span>Pas d'image</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="movie-info">
+            <h1 class="movie-title">{{ movie.title }}</h1>
+
+            {% if movie.tagline %}
+            <p class="movie-tagline">"{{ movie.tagline }}"</p>
+            {% endif %}
+
+            <div class="movie-meta">
+                <div class="movie-rating">
+                    <span class="rating-score">{{ "%.1f"|format(movie.vote_average) }}/10</span>
+                    <span>({{ movie.vote_count }} votes)</span>
+                </div>
+
+                {% if movie.runtime %}
+                <span>{{ movie.runtime }} min</span>
+                {% endif %}
+
+                {% if movie.release_date %}
+                <span>{{ movie.release_date }}</span>
+                {% endif %}
+
+                {% if director %}
+                <span><strong>Réalisateur:</strong> {{ director }}</span>
+                {% endif %}
+            </div>
+
+            {% if movie.genres %}
+            <div class="movie-genres">
+                {% for genre in movie.genres %}
+                <span class="genre-tag">{{ genre.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if movie.overview %}
+            <div class="movie-overview">
+                <h3>Synopsis</h3>
+                <p>{{ movie.overview }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if trailers %}
+    <h2 class="section-title">Bandes-annonces</h2>
+    <div class="trailers">
+        {% for trailer in trailers %}
+        <div class="trailer-embed">
+            <iframe src="https://www.youtube.com/embed/{{ trailer.key }}"
+                    title="{{ trailer.name }}"
+                    allowfullscreen>
+            </iframe>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if cast %}
+    <h2 class="section-title">Distribution</h2>
+    <div class="cast-grid">
+        {% for actor in cast %}
+        <div class="cast-member">
+            {% if actor.profile_path %}
+            <img src="{{ TMDB_IMAGE_BASE_URL.replace('w500', 'w185') }}{{ actor.profile_path }}"
+                 alt="{{ actor.name }}"
+                 class="cast-photo">
+            {% else %}
+            <div class="cast-photo" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                👤
+            </div>
+            {% endif %}
+            <div class="cast-name">{{ actor.name }}</div>
+            {% if actor.character %}
+            <div class="cast-character">{{ actor.character }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if similar_movies %}
+    <h2 class="section-title">Films similaires</h2>
+    <div class="similar-movies">
+        {% for similar in similar_movies %}
+        <a href="{{ url_for('movies.movie_detail', movie_id=similar.id) }}" class="similar-movie">
+            {% if similar.poster_path %}
+            <img src="{{ TMDB_IMAGE_BASE_URL.replace('w500', 'w342') }}{{ similar.poster_path }}"
+                 alt="{{ similar.title }}"
+                 loading="lazy">
+            {% else %}
+            <div style="height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                Pas d'image
+            </div>
+            {% endif %}
+            <h4>{{ similar.title }}</h4>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

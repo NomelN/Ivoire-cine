@@ -1,80 +1,30 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ivoire Ciné</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-        }
-        .movies {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 20px;
-        }
-        .movie {
-            margin: 15px;
-            text-align: center;
-            width: 200px;
-        }
-        .movie img {
-            max-width: 100%;
-            border-radius: 10px;
-        }
-        .movie h3 {
-            font-size: 16px;
-            margin: 10px 0 5px;
-        }
-        .pagination {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .pagination a {
-            padding: 10px 15px;
-            margin: 0 5px;
-            text-decoration: none;
-            background-color: #007BFF;
-            color: black;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Films {{ genre_name }}</h1>
-    <div class="movies">
-        {% for movie in movies %}
-        <div class="movie">
-            {% if movie.poster_path %}
-            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
-            {% else %}
-            <img src="https://via.placeholder.com/200x300?text=Pas+d'image" alt="Pas d'image">
-            {% endif %}
-            <h3>{{ movie.title }}</h3>
-            <p>Sortie : {{ movie.release_date|default("Date inconnue") }}</p>
-            <p>
-                {% for i in range(1, 6) %}
-                    {% if i <= (movie.vote_average / 2)|round(0, 'floor') %}
-                    ⭐
-                    {% else %}
-                    ☆
-                    {% endif %}
-                {% endfor %}
-                
-            </p>
+{% extends "base.html" %}
+
+{% block title %}{{ genre_name }} - Ivoire Ciné{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin: 2rem 0;">
+    <h1>Films - {{ genre_name }}</h1>
+    {% if movies %}
+        <p>Page {{ page }} sur {{ total_pages }}</p>
+    {% endif %}
+</div>
+
+<div class="movies">
+    {% for movie in movies %}
+        {% include 'components/movie_card.html' %}
+    {% else %}
+        <div class="empty-state">
+            <h2>Aucun film trouvé</h2>
+            <p>Aucun film n'est disponible pour le genre "{{ genre_name }}".</p>
         </div>
-        {% endfor %}
-    </div>
-    <div class="pagination">
-        {% if page > 1 %}
-        <a href="/genre/{{ genre_id }}?page={{ page - 1 }}">Précédent</a>
-        {% endif %}
-        {% if page < total_pages %}
-        <a href="/genre/{{ genre_id }}?page={{ page + 1 }}">Suivant</a>
-        {% endif %}
-    </div>
-</body>
-</html>
+    {% endfor %}
+</div>
+
+{% if movies and total_pages > 1 %}
+    {% set endpoint = 'movies.movies_by_genre' %}
+    {% set param = 'page' %}
+    {% set extra_params = {'genre_id': genre_id} %}
+    {% include 'components/pagination.html' with context %}
+{% endif %}
+{% endblock %}

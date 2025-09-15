@@ -1,0 +1,29 @@
+<!-- Carte de film réutilisable -->
+<div class="movie">
+    {% if movie.poster_path %}
+    <img src="{{ TMDB_IMAGE_BASE_URL }}{{ movie.poster_path }}"
+         alt="{{ movie.title }}"
+         loading="lazy">
+    {% else %}
+    <img src="https://via.placeholder.com/200x300?text=Pas+d'image"
+         alt="Pas d'image"
+         loading="lazy">
+    {% endif %}
+
+    <h3>{{ movie.title }}</h3>
+
+    <p class="release-date">
+        Sortie : {{ movie.release_date or "Date inconnue" }}
+    </p>
+
+    <div class="rating">
+        {% set rating = (movie.vote_average / 2) | round(0, 'floor') %}
+        {% for i in range(1, 6) %}
+            {% if i <= rating %}
+            <span class="star filled">⭐</span>
+            {% else %}
+            <span class="star">☆</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

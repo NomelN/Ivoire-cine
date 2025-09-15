@@ -1,0 +1,28 @@
+<!-- Pagination réutilisable -->
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% if page > 1 %}
+        {% if extra_params %}
+            <a href="{{ url_for(endpoint, page=page-1, **extra_params) }}" class="pagination-btn">← Précédent</a>
+        {% else %}
+            <a href="{{ url_for(endpoint, page=page-1) }}" class="pagination-btn">← Précédent</a>
+        {% endif %}
+    {% else %}
+    <span class="pagination-btn disabled">← Précédent</span>
+    {% endif %}
+
+    <span class="pagination-info">
+        Page {{ page }} sur {{ total_pages }}
+    </span>
+
+    {% if page < total_pages %}
+        {% if extra_params %}
+            <a href="{{ url_for(endpoint, page=page+1, **extra_params) }}" class="pagination-btn">Suivant →</a>
+        {% else %}
+            <a href="{{ url_for(endpoint, page=page+1) }}" class="pagination-btn">Suivant →</a>
+        {% endif %}
+    {% else %}
+    <span class="pagination-btn disabled">Suivant →</span>
+    {% endif %}
+</div>
+{% endif %}

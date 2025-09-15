@@ -1,0 +1,36 @@
+<!-- Barre de navigation -->
+<nav class="navbar">
+    <div class="nav-left">
+        <a href="{{ url_for('movies.home') }}">Accueil</a>
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Catégories</a>
+            <div class="dropdown-menu">
+                <a href="{{ url_for('movies.movies_by_category', category='now_playing') }}">Films en Salle</a>
+                <a href="{{ url_for('movies.movies_by_category', category='popular') }}">Films Populaires</a>
+                <a href="{{ url_for('movies.movies_by_category', category='top_rated') }}">Mieux Notés</a>
+                <a href="{{ url_for('movies.movies_by_category', category='upcoming') }}">À Venir</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle">Genres</a>
+            <div class="dropdown-menu" id="genres-menu">
+                {% for genre in genres %}
+                <a href="{{ url_for('movies.movies_by_genre', genre_id=genre.id) }}">{{ genre.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <form action="{{ url_for('movies.search') }}" method="get" class="search-form">
+        <input type="text"
+               name="query"
+               value="{{ request.args.get('query', '') }}"
+               placeholder="Rechercher un film..."
+               required>
+        <button type="submit">Rechercher</button>
+    </form>
+
+    <div class="nav-right">
+        <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDb</a>
+    </div>
+</nav>

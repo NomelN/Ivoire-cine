@@ -69,9 +69,12 @@
     <div class="navbar">
         <div>
             <a href="/">Accueil</a>
-            <a href="/?page=1">Films Populaires</a>
+            <a href="/category/now_playing">En Cours</a>
+            <a href="/category/popular">Populaires</a>
+            <a href="/category/top_rated">Mieux Notés</a>
+            <a href="/category/upcoming">A Venir</a>
             <div style="display: inline-block; position: relative;">
-                <a href="#">Catégories</a>
+                <a href="#">Genre</a>
                 <div style="position: absolute; background: black; border: 1px solid #ccc; padding: 10px; display: none;" id="genres-menu">
                     {% for genre in genres %}
                     <a href="/genre/{{ genre.id }}">{{ genre.name }}</a><br>

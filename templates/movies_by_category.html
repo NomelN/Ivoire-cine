@@ -4,92 +4,118 @@
 
 {% block extra_css %}
 <style>
-    body {
+    .category-container {
         display: flex;
-    }
-
-    main {
-        display: flex;
-        flex: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        gap: 2rem;
     }
 
     .sidebar {
         width: 200px;
-        background-color: #333;
-        color: white;
-        min-height: calc(100vh - 70px);
-        padding: 20px;
-        box-sizing: border-box;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px var(--shadow-light);
+        height: fit-content;
+        position: sticky;
+        top: 2rem;
     }
 
     .sidebar h3 {
         margin-top: 0;
-        margin-bottom: 20px;
-        color: #fff;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+        font-size: 1.1rem;
     }
 
     .sidebar a {
-        color: white;
+        color: var(--text-color);
         text-decoration: none;
         display: block;
-        margin: 10px 0;
-        padding: 10px;
+        margin: 0.5rem 0;
+        padding: 0.7rem;
         border-radius: 5px;
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
     }
 
     .sidebar a:hover {
-        background-color: #444;
+        background-color: var(--shadow-light);
+        transform: translateX(5px);
     }
 
     .sidebar a.active {
         background-color: #007BFF;
+        color: white;
     }
 
     .content {
         flex: 1;
-        padding: 20px;
     }
 
     .content h1 {
         margin-top: 0;
-        margin-bottom: 30px;
-        color: #333;
+        margin-bottom: 2rem;
+        color: var(--text-color);
+        font-size: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .category-container {
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .sidebar {
+            width: 100%;
+            position: static;
+        }
+
+        .sidebar a {
+            display: inline-block;
+            margin: 0.3rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="sidebar">
-    <h3>Catégories</h3>
-    <a href="{{ url_for('movies.movies_by_category', category='now_playing') }}"
-       class="{% if category == 'now_playing' %}active{% endif %}">Films en Salle</a>
-    <a href="{{ url_for('movies.movies_by_category', category='popular') }}"
-       class="{% if category == 'popular' %}active{% endif %}">Films Populaires</a>
-    <a href="{{ url_for('movies.movies_by_category', category='top_rated') }}"
-       class="{% if category == 'top_rated' %}active{% endif %}">Films les Mieux Notés</a>
-    <a href="{{ url_for('movies.movies_by_category', category='upcoming') }}"
-       class="{% if category == 'upcoming' %}active{% endif %}">Films à Venir</a>
-</div>
-
-<div class="content">
-    <h1>{{ category_name }}</h1>
-
-    <div class="movies">
-        {% for movie in movies %}
-            {% include 'components/movie_card.html' %}
-        {% else %}
-            <div class="empty-state">
-                <h2>Aucun film trouvé</h2>
-                <p>Aucun film n'est disponible pour la catégorie "{{ category_name }}".</p>
-            </div>
-        {% endfor %}
+<div class="category-container">
+    <div class="sidebar">
+        <h3>Catégories</h3>
+        <a href="{{ url_for('movies.movies_by_category', category='now_playing') }}"
+           class="{% if category == 'now_playing' %}active{% endif %}">Films en Salle</a>
+        <a href="{{ url_for('movies.movies_by_category', category='popular') }}"
+           class="{% if category == 'popular' %}active{% endif %}">Films Populaires</a>
+        <a href="{{ url_for('movies.movies_by_category', category='top_rated') }}"
+           class="{% if category == 'top_rated' %}active{% endif %}">Films les Mieux Notés</a>
+        <a href="{{ url_for('movies.movies_by_category', category='upcoming') }}"
+           class="{% if category == 'upcoming' %}active{% endif %}">Films à Venir</a>
     </div>
 
-    {% if movies and total_pages > 1 %}
-        {% set endpoint = 'movies.movies_by_category' %}
-        {% set extra_params = {'category': category} %}
-        {% include 'components/pagination.html' with context %}
-    {% endif %}
+    <div class="content">
+        <h1>{{ category_name }}</h1>
+
+        <div class="movies">
+            {% for movie in movies %}
+                {% include 'components/movie_card.html' %}
+            {% else %}
+                <div class="empty-state">
+                    <h2>Aucun film trouvé</h2>
+                    <p>Aucun film n'est disponible pour la catégorie "{{ category_name }}".</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if movies and total_pages > 1 %}
+            {% set endpoint = 'movies.movies_by_category' %}
+            {% set extra_params = {'category': category} %}
+            {% include 'components/pagination.html' with context %}
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

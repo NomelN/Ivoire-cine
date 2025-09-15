@@ -164,5 +164,43 @@ class TMDBService:
 
         return data, error
 
+    def get_movie_details(self, movie_id: int) -> Tuple[Optional[Dict[Any, Any]], Optional[str]]:
+        """Récupère les détails complets d'un film"""
+        cache_key = f"movie_details_{movie_id}"
+
+        # Vérifier le cache
+        cached_data = self.cache.get(cache_key)
+        if cached_data:
+            return cached_data, None
+
+        # Faire la requête API avec append_to_response pour récupérer plus de données
+        data, error = self._make_request(f"movie/{movie_id}", {
+            "append_to_response": "credits,videos,similar,recommendations"
+        })
+
+        if data:
+            # Mettre en cache
+            self.cache.set(cache_key, data)
+
+        return data, error
+
+    def get_movie_credits(self, movie_id: int) -> Tuple[Optional[Dict[Any, Any]], Optional[str]]:
+        """Récupère les crédits d'un film (acteurs, équipe technique)"""
+        cache_key = f"movie_credits_{movie_id}"
+
+        # Vérifier le cache
+        cached_data = self.cache.get(cache_key)
+        if cached_data:
+            return cached_data, None
+
+        # Faire la requête API
+        data, error = self._make_request(f"movie/{movie_id}/credits", {})
+
+        if data:
+            # Mettre en cache
+            self.cache.set(cache_key, data)
+
+        return data, error
+
 # Instance globale du service
 tmdb_service = TMDBService()

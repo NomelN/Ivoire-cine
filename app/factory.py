@@ -7,6 +7,7 @@ from app.config.settings import get_config
 from app.routes.movies import movies_bp
 from app.utils.errors import register_error_handlers, setup_logging
 from app.utils.context_processors import register_context_processors
+from app.utils.static_optimization import configure_static_optimization
 
 # SÉCURITÉ: Configurer les logs dès l'import pour éviter l'exposition de clés API
 logging.getLogger('urllib3.connectionpool').setLevel(logging.WARNING)
@@ -45,5 +46,8 @@ def create_app(config_name=None):
 
     # Enregistrer les processeurs de contexte
     register_context_processors(app)
+
+    # Configurer l'optimisation des ressources statiques
+    configure_static_optimization(app)
 
     return app
